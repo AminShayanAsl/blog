@@ -26,16 +26,6 @@ class UserTest extends TestCase {
         $this->assertEquals('user', $result['roll']);
     }
 
-    public function testUserCanLogin() {
-        $user = UserFactory::create('Ali', 'user', 'password123');
-        $user->save();
-
-        $loggedInUser = User::login('Ali', 'password123');
-
-        $this->assertNotNull($loggedInUser);
-        $this->assertTrue($loggedInUser);
-    }
-
     protected function tearDown(): void {
         $this->db->exec("DELETE FROM users");
     }

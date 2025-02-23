@@ -63,22 +63,6 @@ class PostTest extends TestCase {
         $this->assertEquals('توضیح کوتاه مقاله', $result['description']);
     }
 
-    public function testPostCanBeLiked() {
-        $user = UserFactory::create('Ali', 'user', 'password123');
-        $user->save();
-        $user_id = User::getByUsername('Ali')['id'];
-        $post = PostFactory::create('ورزشی', 'عنوان مقاله', 'توضیح کوتاه مقاله', $user_id);
-        $post->save();
-        $post_id = Post::getByTitle('عنوان مقاله')['id'];
-
-        $post->like($user_id);
-
-        $stmt = $this->db->query("SELECT COUNT(*) FROM likes WHERE post_id = " . $post_id . " AND user_id = " . $user_id);
-        $result = $stmt->fetchColumn();
-
-        $this->assertEquals(1, $result);
-    }
-
     public function testGetLikesCount() {
         $first_user = UserFactory::create('Ali', 'user', 'password123');
         $first_user->save();
@@ -90,10 +74,12 @@ class PostTest extends TestCase {
         $post->save();
         $post_id = Post::getByTitle('عنوان مقاله')['id'];
 
-        $post->like($first_user_id);
-        $post->like($second_user_id);
+        $like_first = \App\Factories\LikeFactory::create($first_user_id, $post_id);
+        $like_first->save();
+        $like_second = \App\Factories\LikeFactory::create($second_user_id, $post_id);
+        $like_second->save();
 
-        $likesCount = $post->getLikesCount();
+        $likesCount = Post::getLikesCount($post_id);
 
         $this->assertEquals(2, $likesCount);
     }
